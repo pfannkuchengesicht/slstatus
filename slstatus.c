@@ -13,6 +13,8 @@
 /* local libraries */
 #include "config.h"
 
+#include "config_reader.h"
+
 /* functions */
 void setstatus(char *str);
 char *battery();
@@ -316,6 +318,68 @@ main()
 {
     char status[1024];
 
+    Config_t *cfg = open_config("/etc/slstatus.conf");
+
+    KeyValue_t *kv = NULL;
+
+    while((kv = read_next(cfg)) != NULL) {
+        if(strcmp(kv->key, "snd.soundcard") == 0) {
+            soundcard = malloc(strlen(kv->value) + 1);
+            strncpy(soundcard, kv->value, strlen(kv->value));
+        } else if(strcmp(kv->key, "snd.channel") == 0) {
+            channel = malloc(strlen(kv->value) + 1);
+            strncpy(channel, kv->value, strlen(kv->value));
+        } else if(strcmp(kv->key, "wifi") == 0) {
+            wificard = malloc(strlen(kv->value) + 1);
+            strncpy(wificard, kv->value, strlen(kv->value));
+        } else if(strcmp(kv->key, "bat.now") == 0) {
+            batterynowfile = malloc(strlen(kv->value) + 1);
+            strncpy(batterynowfile, kv->value, strlen(kv->value));
+        } else if(strcmp(kv->key, "bat.full") == 0) {
+            batteryfullfile = malloc(strlen(kv->value) + 1);
+            strncpy(batteryfullfile, kv->value, strlen(kv->value));
+        } else if(strcmp(kv->key, "cpu.temp") == 0) {
+            tempfile = malloc(strlen(kv->value) + 1);
+            strncpy(tempfile, kv->value, strlen(kv->value));
+        } /*else if(strcmp(kv->key, "timeformat") == 0) {
+            timeformat = malloc(strlen(kv->value) + 1);
+            strncpy(timeformat, kv->value, strlen(kv->value));
+        }*/
+    }
+
+    if(soundcard == NULL) {
+        exit(1);
+    }
+
+    if(channel == NULL) {
+        exit(1);
+    }
+
+    if(wificard == NULL) {
+        exit(1);
+    }
+
+    if(batterynowfile == NULL) {
+        exit(1);
+    }
+
+    if(batteryfullfile == NULL) {
+        exit(1);
+    }
+
+    if(tempfile == NULL) {
+        exit(1);
+    }
+    
+    printf("Soundcard: %s\n", soundcard);
+    printf("channel: %s\n", channel);
+    printf("Wifi: %s\n", wificard);
+    printf("Bat now: %s\n", batterynowfile);
+    printf("Bat full: %s\n", batteryfullfile);
+    printf("CPU temp: %s\n", tempfile);
+
+    close_config(cfg);
+
     /* open display */
     if (!(dpy = XOpenDisplay(0x0))) {
         fprintf(stderr, "Cannot open display!\n");
@@ -330,6 +394,13 @@ main()
 
     /* close display */
     XCloseDisplay(dpy);
+
+    free(soundcard);
+    free(channel);
+    free(wificard);
+    free(batterynowfile);
+    free(batteryfullfile);
+    free(tempfile);
 
     /* exit successfully */
     return 0;

@@ -1,0 +1,6 @@
+snd.soundcard=default
+snd.channel=Master
+wifi=wlp4s0
+bat.now=/sys/class/power_supply/BAT/charge_now
+bat.full=/sys/class/power_supply/BAT/charge_full_design
+cpu.temp=/sys/devices/platform/coretemp.0/hwmon/hwmon1/temp1_input
